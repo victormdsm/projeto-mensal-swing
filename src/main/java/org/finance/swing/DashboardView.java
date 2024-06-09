@@ -4,8 +4,11 @@
  */
 package org.finance.swing;
 
+import org.finance.controller.GastoController;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.Timer;
@@ -18,12 +21,16 @@ import static org.finance.swing.Login.userSystem;
  */
 public class DashboardView extends javax.swing.JFrame {
 
+    private GastoController gastoController;
     /**
      * Creates new form dashboardView
      */
     public DashboardView() {
+        gastoController = new GastoController();
         initComponents();
         iniciarTimer();
+        receberParametros();
+
     }
 
     /**
@@ -37,6 +44,12 @@ public class DashboardView extends javax.swing.JFrame {
 
         userName = new javax.swing.JTextField();
         timeField = new javax.swing.JTextField();
+        valorTotal = new javax.swing.JFormattedTextField();
+        jTextField1 = new javax.swing.JTextField();
+        despesasButton = new javax.swing.JButton();
+        gastosButton = new javax.swing.JButton();
+        dadosButton = new javax.swing.JButton();
+        logout = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -59,16 +72,104 @@ public class DashboardView extends javax.swing.JFrame {
         timeField.setBorder(null);
         getContentPane().add(timeField, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 30, 180, 20));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/dashboard.png"))); // NOI18N
+        valorTotal.setEditable(false);
+        valorTotal.setBackground(new java.awt.Color(195, 226, 190));
+        valorTotal.setBorder(null);
+        valorTotal.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("¤¤#,##0.00"))));
+        valorTotal.setToolTipText("");
+        valorTotal.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        getContentPane().add(valorTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 100, 130, 20));
+
+        jTextField1.setBackground(new java.awt.Color(195, 226, 190));
+        jTextField1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        jTextField1.setText("R$");
+        jTextField1.setBorder(null);
+        getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 100, -1, 20));
+
+        despesasButton.setContentAreaFilled(false);
+        despesasButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                despesasButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(despesasButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 290, 160, 50));
+
+        gastosButton.setContentAreaFilled(false);
+        gastosButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gastosButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(gastosButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 293, 160, 50));
+
+        dadosButton.setContentAreaFilled(false);
+        dadosButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dadosButtonActionPerformed(evt);
+            }
+        });
+        getContentPane().add(dadosButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 293, 160, 40));
+
+        logout.setContentAreaFilled(false);
+        logout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutActionPerformed(evt);
+            }
+        });
+        getContentPane().add(logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 420, 140, 20));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/loginv3.png"))); // NOI18N
         jLabel1.setText("jLabel1");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, -1));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void userNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
 
     }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void gastosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gastosButtonActionPerformed
+        GastosView gastosView = new GastosView();
+        gastosView.setDashboardView(this); // Passando a referência da DashboardView para a GastosView
+        gastosView.setVisible(true);
+    }//GEN-LAST:event_gastosButtonActionPerformed
+
+    private void dadosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dadosButtonActionPerformed
+        DadosView dadosView = new DadosView();
+        dadosView.setVisible(true);
+    }//GEN-LAST:event_dadosButtonActionPerformed
+
+    private void despesasButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_despesasButtonActionPerformed
+        DespesaView despesaView = new DespesaView();
+        despesaView.setVisible(true);
+    }//GEN-LAST:event_despesasButtonActionPerformed
+
+    private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
+        userSystem = null;
+        this.setVisible(false);
+    }//GEN-LAST:event_logoutActionPerformed
+
+    private void receberParametros() {
+        userName.setText(userSystem.getNome());
+        BigDecimal valor = gastoController.valorTotal(userSystem.getId());
+        if (valor != null) {
+            valorTotal.setText(valor.toPlainString());
+        } else {
+            valorTotal.setText("0");
+        }
+
+    }
+
+    public void atualizarValorTotal() {
+        BigDecimal valor = gastoController.valorTotal(userSystem.getId());
+        if (valor != null) {
+            valorTotal.setText(valor.toPlainString());
+        } else {
+            valorTotal.setText("0");
+        }
+    }
 
     private void iniciarTimer() {
         Timer timer = new Timer(1000, new ActionListener() {
@@ -127,8 +228,14 @@ public class DashboardView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton dadosButton;
+    private javax.swing.JButton despesasButton;
+    private javax.swing.JButton gastosButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton logout;
     private javax.swing.JTextField timeField;
     private javax.swing.JTextField userName;
+    private javax.swing.JFormattedTextField valorTotal;
     // End of variables declaration//GEN-END:variables
 }

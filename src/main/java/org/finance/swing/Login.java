@@ -91,7 +91,7 @@ public class Login extends javax.swing.JFrame {
             DashboardView dashboardView = new DashboardView();
             dashboardView.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Emeil ou senha incorretos! ");
+            JOptionPane.showMessageDialog(this, "Email ou senha incorretos! ");
         }
 
     }//GEN-LAST:event_logarContaActionPerformed

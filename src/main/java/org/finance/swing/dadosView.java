@@ -12,22 +12,26 @@ import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+
+import static org.finance.swing.Login.userSystem;
 
 /**
  *
  * @author Victor
  */
-public class CadastrarView extends javax.swing.JFrame {
+public class DadosView extends javax.swing.JFrame {
 
     private UsuarioController usuarioController;
     /**
      * Creates new form CadastrarView
      */
-    public CadastrarView() {
+    public DadosView() {
         initComponents();
+        mostrarDados();
         usuarioController = new UsuarioController();
     }
 
@@ -45,7 +49,6 @@ public class CadastrarView extends javax.swing.JFrame {
         cpf = new javax.swing.JFormattedTextField();
         nome = new javax.swing.JTextField();
         email = new javax.swing.JTextField();
-        senha = new javax.swing.JPasswordField();
         complemento = new javax.swing.JTextField();
         nomeDaRua = new javax.swing.JTextField();
         bairro = new javax.swing.JTextField();
@@ -55,12 +58,13 @@ public class CadastrarView extends javax.swing.JFrame {
         numeroDaCasa = new javax.swing.JTextField();
         cidade = new javax.swing.JTextField();
         cadastrar = new javax.swing.JButton();
-        voltar = new javax.swing.JButton();
+        backButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        nomeDeUsuario.setEditable(false);
         nomeDeUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nomeDeUsuarioActionPerformed(evt);
@@ -68,6 +72,7 @@ public class CadastrarView extends javax.swing.JFrame {
         });
         getContentPane().add(nomeDeUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 360, 270, 30));
 
+        dataDeNascimento.setEditable(false);
         try {
             dataDeNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
         } catch (java.text.ParseException ex) {
@@ -80,6 +85,7 @@ public class CadastrarView extends javax.swing.JFrame {
         });
         getContentPane().add(dataDeNascimento, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 240, 270, 30));
 
+        cpf.setEditable(false);
         try {
             cpf.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
         } catch (java.text.ParseException ex) {
@@ -88,6 +94,7 @@ public class CadastrarView extends javax.swing.JFrame {
         cpf.setText("123.465.864-25");
         getContentPane().add(cpf, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 180, 270, 30));
 
+        nome.setEditable(false);
         nome.setToolTipText("");
         nome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,7 +109,6 @@ public class CadastrarView extends javax.swing.JFrame {
             }
         });
         getContentPane().add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 270, 30));
-        getContentPane().add(senha, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 430, 270, 30));
         getContentPane().add(complemento, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 430, 280, 30));
         getContentPane().add(nomeDaRua, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 110, 280, 30));
         getContentPane().add(bairro, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 170, 280, 30));
@@ -120,15 +126,16 @@ public class CadastrarView extends javax.swing.JFrame {
         });
         getContentPane().add(cadastrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 543, 180, 30));
 
-        voltar.setContentAreaFilled(false);
-        voltar.addActionListener(new java.awt.event.ActionListener() {
+        backButton.setAutoscrolls(true);
+        backButton.setContentAreaFilled(false);
+        backButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                voltarActionPerformed(evt);
+                backButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(voltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 573, 160, 30));
+        getContentPane().add(backButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 570, 160, 30));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cadastrar5.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/dadosUsuario.png"))); // NOI18N
         jLabel1.setText("jLabel1");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, -1));
 
@@ -148,46 +155,69 @@ public class CadastrarView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_emailActionPerformed
 
+    private void mostrarDados() {
+        // mostrar endereco
+        nomeDaRua.setText(userSystem.getEndereco().getRua());
+        cep.setText(userSystem.getEndereco().getCep());
+        cidade.setText(userSystem.getEndereco().getCidade());
+        estado.setText(userSystem.getEndereco().getEstado());
+        pais.setText(userSystem.getEndereco().getPais());
+        complemento.setText(userSystem.getEndereco().getComplemento());
+        numeroDaCasa.setText(userSystem.getEndereco().getNumero());
+
+        //mostrar dados usuario;
+        nome.setText(userSystem.getNome());
+        cpf.setText(userSystem.getCpf());
+        LocalDate localDate = userSystem.getDataNascimento();
+        Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dataDeNascimento.setText(dateFormat.format(date));
+        email.setText(userSystem.getEmail());
+        nomeDeUsuario.setText(userSystem.getNomeUsuario());
+
+    }
+
     private void cadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarActionPerformed
-        String rua = nomeDaRua.getText();
-        String numero = numeroDaCasa.getText();
-        String cep2 = cep.getText();
-        String cidade2 = cidade.getText();
-        String estado2 = estado.getText();
-        String pais2 = pais.getText();
-        String complemento2 = complemento.getText();
+        UsuarioEntity usuario = userSystem; // Obtém o usuário atual
 
-        if (rua.isEmpty() || numero.isEmpty() || cep2.isEmpty() || cidade2.isEmpty() || estado2.isEmpty() || pais2.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos os campos do endereço devem ser preenchidos.");
-            return;
+        // Verifica e atualiza os campos de endereço se não forem nulos
+        if (!nomeDaRua.getText().isEmpty()) {
+            usuario.getEndereco().setRua(nomeDaRua.getText());
+        }
+        if (!cep.getText().isEmpty()) {
+            usuario.getEndereco().setCep(cep.getText());
+        }
+        if (!cidade.getText().isEmpty()) {
+            usuario.getEndereco().setCidade(cidade.getText());
+        }
+        if (!estado.getText().isEmpty()) {
+            usuario.getEndereco().setEstado(estado.getText());
+        }
+        if (!pais.getText().isEmpty()) {
+            usuario.getEndereco().setPais(pais.getText());
+        }
+        if (!complemento.getText().isEmpty()) {
+            usuario.getEndereco().setComplemento(complemento.getText());
+        }
+        if (!numeroDaCasa.getText().isEmpty()) {
+            usuario.getEndereco().setNumero(numeroDaCasa.getText());
         }
 
-        EnderecoEntity endereco = new EnderecoEntity(rua, numero, cep2, cidade2, estado2, pais2, complemento2);
+        // Verifica e atualiza o email se não for nulo
+        if (!email.getText().isEmpty()) {
+            usuario.setEmail(email.getText());
+        }
 
-        String dataStr = dataDeNascimento.getText();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dataFormatada = null;
+        // Persiste as alterações no banco de dados
         try {
-            dataFormatada = LocalDate.parse(dataStr, formatter);
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.");
-            return;
-        }
-        String senhaUser = new String(senha.getPassword());
-
-        if (nome.getText().isEmpty() || cpf.getText().isEmpty() || dataFormatada == null || email.getText().isEmpty() || nomeDeUsuario.getText().isEmpty() || senhaUser.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos os campos do usuário devem ser preenchidos.");
-            return;
+            usuarioController.updateUser(usuario);
+            JOptionPane.showMessageDialog(this, "Dados atualizados com sucesso!");
+            this.setVisible(false);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao atualizar os dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
-        UsuarioEntity usuario = new UsuarioEntity(nome.getText(), cpf.getText(), dataFormatada, email.getText(), nomeDeUsuario.getText(), senhaUser, endereco);
-
-        usuario = usuarioController.creatUser(usuario);
-        if(usuario != null) {
-            JOptionPane.showMessageDialog(this, "Conta Criada com sucesso! ");
-        } else {
-            JOptionPane.showMessageDialog(this, "Emeil ou senha incorretos! ");
-        }
         this.setVisible(false);
     }//GEN-LAST:event_cadastrarActionPerformed
 
@@ -195,9 +225,9 @@ public class CadastrarView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_dataDeNascimentoActionPerformed
 
-    private void voltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voltarActionPerformed
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         this.setVisible(false);
-    }//GEN-LAST:event_voltarActionPerformed
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -216,25 +246,29 @@ public class CadastrarView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CadastrarView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DadosView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CadastrarView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DadosView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CadastrarView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DadosView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CadastrarView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DadosView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CadastrarView().setVisible(true);
+                new DadosView().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backButton;
     private javax.swing.JTextField bairro;
     private javax.swing.JButton cadastrar;
     private javax.swing.JTextField cep;
@@ -250,7 +284,5 @@ public class CadastrarView extends javax.swing.JFrame {
     private javax.swing.JTextField nomeDeUsuario;
     private javax.swing.JTextField numeroDaCasa;
     private javax.swing.JTextField pais;
-    private javax.swing.JPasswordField senha;
-    private javax.swing.JButton voltar;
     // End of variables declaration//GEN-END:variables
 }
